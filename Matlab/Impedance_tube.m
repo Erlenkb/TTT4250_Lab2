@@ -107,7 +107,7 @@ R =( (H12 - HI)./(HR - H12) ).*exp(2*1i*(ww/c)*x_1);    % eq. 17;
 alpha = 1 - abs(R).^2;
 
 
-Z = (1+R)./(1-R);
+Z = (1+R)./(1-R) * rho * c;
  
 %% Plotting final results
  
@@ -141,7 +141,8 @@ title('Impedance Z')
 xlabel('Frequency [Hz]' )
 legend('')
 hold off
- 
+
+exportgraphics(figure(11), ['ImpedanceTube.png'],'Resolution',450)
  
 %% Mikis model
 
