@@ -1,8 +1,3 @@
-%% Pseudo code for lab 5 - Acoustic Measurement Terchnique
- 
-% Author: Robin Andre RÃ¸rstadbotnen, 27.04.2020
-% Modified, 23.02.2022
-% DO NOT DISTRIBUTE.
 
 close all
 clear 
@@ -56,7 +51,7 @@ plot1=plot(tt,p1)
 hold on
 plot2=plot(tt,p2)
 ylim([-3 1.5])
-%legend("p1","p2")
+
 hold off
 grid on
 xlabel('Time [s] '), ylabel('Magnitude'), title( 'Impulse response ');
@@ -80,7 +75,7 @@ frecvec4 = fft(p2(1,:) ,n);
 
 % Plot fft
 figure(20) 
-%frecvec = p1(1,:)
+
 semilogx(ff,20*log10(frecvec1));
 hold on;
 semilogx(ff,20*log10(frecvec2));
@@ -99,10 +94,6 @@ HC    = sqrt(H12I ./ H12II);
 
 H12   = H12I ./ HC;
 
-%figure(21)
-%semilogx(ff, abs(H12))
-%title("H12")
-
 HI    = exp(-1i*ww/c  *s );
 HR    = exp( 1i*ww/c  *s );          
  
@@ -110,8 +101,6 @@ HR    = exp( 1i*ww/c  *s );
 R =( (H12 - HI)./(HR - H12) ).*exp(2*1i*(ww/c)*x_1);    % eq. 17;
 
 alpha = 1 - abs(R).^2;
-
-
 Z = (1+R) ./ (1-R) * rho * c;
  
 %% Plotting final results
@@ -165,57 +154,56 @@ hold off
  
 %% Mikis model
 
-sigma = 9100; %Pa*s/m2
-e = 0.1;
-f = ff;
-w = ww;
+f = [100:1:2000];
+omega = 2*pi*f;
 
-fac1 = (10^3)*(ff / sigma).^-(0.618);
-fac2 = (10^3)*(ff / sigma).^(-0.632);
+rho_0 = 1.225;      % [Kg.m-3] density at rest of air at 18C, 1atm
+c_0   = 342.2;      % [m.s-1] speed of sound in air at 18C, 1atm
+P_0   = 1.0132e+05; % [N.m-2] atmospheric pressure at 18C, 1atm
+sigma = 9100       % [N.s.m-4] static air flow resistivity of material
+h     = 0.1        % [m] thickness of material
+X = f/sigma;
 
-k = (ww./c) .*(1+7.81*fac1 - 1i*11.41*fac1);
+Z_DB70_Mik90 = rho_0*c_0*( 1 + 5.50*(X*1000).^(-0.632) ...
+                            - i*8.43*(X*1000).^(-0.632) ); 
 
+k_DB70_Mik90 = omega/c_0 .* (-i) .* ( 11.41*(X*1000).^(-0.618) ...
+                                      + i* (1 + 7.81*(X*1000).^(-0.618) ) );
 
+Z = Z_DB70_Mik90;
+Z = -1i.*Z_DB70_Mik90./tan(k_DB70_Mik90*h);
 
-%Zc = -1i*(1+5.5*fac2 -1i*8.43*fac2).*(rho*c);
-X = ff / sigma
-Zc = rho * c * (1+5.50*(X*1000).^(-0.632) - i*8.43*(X*1000).^(-0.632));
+R = (Z-rho_0*c_0)./(Z+rho_0*c_0);
+a = 1-abs(R).^2
 
-
-figure(12)
-
-semilogx(ff,real(Zc),'r')
+figure(10)
+subplot(1,2,2)
+semilogx(f, real(Z))
 hold on
-semilogx(ff,imag(Zc),'b');
-semilogx(ff,abs(Zc),'k');
+semilogx(f, imag(Z))
+semilogx(f, abs(Z))
 grid on
-% ylim([-4 4])
-xlim([f_l f_u]);
 title('Impedance Z')
 xlabel('Frequency [Hz]' )
+ylabel("Magnitude")
 legend('Re[Z]', "Im[Z]", "|Z|")
 set(gca,'fontsize',12,'fontweight','bold');
+set(gcf,'units','centimeters','position',[2,1,29.7,11.0])
 hold off
-%r  = -1*(rho*c + Zc) ./ (rho*c - Zc);
-r = (Zc-rho*c) ./ (Zc + rho*c)
-abs = 1-abs(r).^2;
 
-figure(13)
-
-semilogx(ff, abs);
+figure(10)
+subplot(1,2,1)
+semilogx(f, abs(R))
 hold on
-semilogx(ff, r);
-hold off
+semilogx(f, abs(a))
+title('Absorption and Reflection')
+xlabel('Frequency [Hz]')
+ylabel("Magnitude")
+legend('Absorption coefficient', "Reflection coefficient", "Location", "best")
+set(gca,'fontsize',12,'fontweight','bold');
 grid on
-title("Mikkis model")
-xlim([100 2000])
-% Plot it
-%figure
-%semilogx(ff,aks)
-%legend()
-%title()
-%xlabel()
-%ylabel()
+hold off
+
 %xlim([f_l f_u]);
  
  
