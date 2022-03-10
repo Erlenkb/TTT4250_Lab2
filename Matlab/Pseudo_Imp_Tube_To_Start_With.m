@@ -14,15 +14,12 @@ x_1 = 0.180;       %Distance mic 1
 d   = 0.1;         %Diameter of tube
 s   = 0.08;        %Distance between microphones
  
-% Working frequency range 4.2
-% f_l < f < f_u
-f_l =  100;       % .05*c/s;   
-f_u = .58*c/d;     % Eq. 2 should this be eq.3?
-if .45*c/s <= f_u
-    f_u = .58*c/d;         % Eq. 3
-end
+%% Working frequency range 4.2
+f_l =  100;          
+f_u = .58*c/d;    
+f_us = .45*c/s;
  
-% Load .etx files to Matlab
+%% Load .etx files to Matlab
 path2files = "C:\Users\erlen\Downloads\Lab2_TTT4250"
 fileName1  = "Imp_tube_12.etx"
 fileName2  = "Imp_tube_21.etx"
@@ -32,10 +29,9 @@ Tube_f2    = fileName2;
 Psamp1     = importdata(Tube_f1,'\t',22); % 22 is the number of header lines
 Psamp2     = importdata(Tube_f2,'\t',22);
 
-% Extract data
+%% Extract data
 tt      = Psamp1.data(:,1)';
-tmax    = max(tt);
-ind     = 100e-3/(tt(2)-tt(1));          % Extract a part of the signal
+ind     = 150e-3/(tt(2)-tt(1));          % Extract a part of the signal
  
 tt      = tt(1:ind);
 p1(1,:) = Psamp1.data(1:ind,2)'; % Mic 1 in coulmn 2 for rec. 1 - to p1
@@ -44,14 +40,14 @@ p2(1,:) = Psamp2.data(1:ind,3)'; % Mic 1 in coulmn 2 for rec. 2 - to p1
 p2(2,:) = Psamp2.data(1:ind,2)';                         
 % Important to have control of these
  
-% Plot for quality control and prep question
+%% Plot for quality control and prep question
 figure(11)
 subplot(2,2,1)
 plot1=plot(tt,p1)
 hold on
 plot2=plot(tt,p2)
 ylim([-3 1.5])
-
+legend("p1^I", "p2^I", "p2^{II}","p1^{II}" ,"Location", "best")
 hold off
 grid on
 xlabel('Time [s] '), ylabel('Magnitude'), title( 'Impulse response ');
@@ -73,7 +69,7 @@ frecvec2 = fft(p1(2,:) ,n);
 frecvec3 = fft(p2(2,:) ,n);     % Repeat for all data
 frecvec4 = fft(p2(1,:) ,n);
 
-% Plot fft
+%% Plot fft
 figure(20) 
 
 semilogx(ff,20*log10(frecvec1));
@@ -114,8 +110,9 @@ semilogx(ff,20*log10(frecvec3));
 semilogx(ff,20*log10(frecvec4));
 xlabel("Frequency [Hz]");
 ylabel("Magnitude");
-title("FFT of all four pressure measurements")
+title("FFT of the Impulse respons")
 set(gca,'fontsize',12,'fontweight','bold');
+legend("FFT(p1^I)","FFT(p2^I)","FFT(p2^{II})" ,"FFT(p1^{II})","Location", "best")
 grid on
 %ylim
 xlim([f_l f_u]);
@@ -127,7 +124,7 @@ semilogx(ff,alpha);
 hold on
 semilogx(ff,abs(R));
 grid on
-legend("Absorption","Reflection")
+legend("Absorption", "Reflection", "Location", "best")
 hold off
 xlim([f_l f_u]);
 xlabel('Frequency [Hz]'), ylabel('Magnitude')
@@ -144,13 +141,11 @@ semilogx(ff,abs(Z),'k');
 grid on
 % ylim([-4 4])
 xlim([f_l f_u]);
-title('Impedance Z')
+title('Acoustic Impedance Z')
 xlabel('Frequency [Hz]' )
-legend('Re[Z]', "Im[Z]", "|Z|")
+legend('Re[Z]', "Im[Z]", "|Z|", "Location", "best")
 set(gca,'fontsize',12,'fontweight','bold');
 hold off
-
-%exportgraphics(figure(11), ['ImpedanceTube.png'],'Resolution',450)
  
 %% Mikis model
 
@@ -183,7 +178,7 @@ hold on
 semilogx(f, imag(Z))
 semilogx(f, abs(Z))
 grid on
-title('Impedance Z')
+title('Specific Impedance Z_C')
 xlabel('Frequency [Hz]' )
 ylabel("Magnitude")
 legend('Re[Z]', "Im[Z]", "|Z|")
@@ -196,24 +191,20 @@ subplot(1,2,1)
 semilogx(f, abs(R))
 hold on
 semilogx(f, abs(a))
-title('Absorption and Reflection')
+title('Absorption-and Reflection Coefficient')
 xlabel('Frequency [Hz]')
 ylabel("Magnitude")
-legend('Absorption coefficient', "Reflection coefficient", "Location", "best")
+legend('Absorption', "Reflection", "Location", "best")
 set(gca,'fontsize',12,'fontweight','bold');
 grid on
 hold off
 
 %xlim([f_l f_u]);
+%% Save the results
+exportgraphics(figure(10), ['Mikis_Model.png'],'Resolution',450)
+exportgraphics(figure(11), ['Impedance_Tube.png'],'Resolution',450)
  
- 
- 
- %% Save the results
-%  f = gcf;
-%  %path2save = "C:\Users\erlen\Downloads\Lab2_TTT4250";
-%  exportgraphics(f, ['ImpedanceTube.png'],'Resolution',450)
-%  
-%  
+
 %  1+1   % Ez math?
  
  

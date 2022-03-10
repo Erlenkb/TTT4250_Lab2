@@ -31,7 +31,8 @@ hm2 = 0.5;                              % Height mic 2
 
 % From Figure 3 (lecture notes) ir Figure 2 (exercise sheet)
 rd1 = sqrt ( (hh - hm1)^2 + dd^2 );  % Total direct distance travelled to mic 1
-rd2 = sqrt ( (hh - hm2)^2 + dd^2 ); 
+rd2 = sqrt ( (hh - hm2)^2 + dd^2 );
+rd = sqrt((hh-(hm1+hm2)/2)^2 + dd^2);
 rr1 = sqrt ( (hh + hm1)^2 + dd^2);   % Total reflected distance travelled to mic 1
 rr2 = sqrt ( (hh + hm2)^2 + dd^2); 
 rr  = sqrt ( (hh + ((hm1+hm2)/2))^2 + dd^2);
@@ -70,9 +71,9 @@ plot(tt, p2)
 hold off
 ylabel("Magnitude")
 xlabel("Time [s]")
-legend()
+legend("p_{M1}", "p_{M2}","Location", "best")
 grid on
-title("p1")
+title("Impulse response")
 set(gca,'FontSize',12,'Fontweight','bold')
 set(gcf,'units','centimeters','position',[2,1,29.7,21.0])
 
@@ -98,6 +99,9 @@ grid on
 semilogx(ff, 20*log10(frecvec2))
 hold off
 xlabel("Frequency [Hz]");
+title("FFT of the impulse response")
+ylabel("Magnitude")
+legend("FFT(p_{M1})","FFT(p_{M2})","Location", "best")
 xlim([100,2000])
 set(gca,'fontsize',12,'fontweight','bold'); % ++++
 
@@ -152,8 +156,11 @@ semilogx(ff, abs(R))
 xlim([100 2000])
 ylim([0 1])
 grid on
-title("Absoprtion")
-legend("Absorption", "Reflection")
+title("Absorption-and Reflection coefficient")
+xlabel("Frequency [Hz]")
+ylabel("Magnitude")
+legend("Absorption", "Reflection", "Location", "best")
+set(gca,'fontsize',12,'fontweight','bold');
 
 figure(32)
 subplot(2,2,4)
@@ -164,9 +171,11 @@ semilogx(ff,abs(Z),'k');
 grid on
 % ylim([-4 4])
 xlim([100 2000]);
-title('Impedance Z')
+title('Acoustic Impedance Z')
 xlabel('Frequency [Hz]' )
-legend('Re[Z]', "Im[Z]", "|Z|")
+ylabel("Magnitude")
+legend('Re[Z]', "Im[Z]", "|Z|", "Location", "best")
+set(gca,'fontsize',12,'fontweight','bold');
 hold off
 exportgraphics(figure(32), ['Free_Field.png'],'Resolution',450)
 
