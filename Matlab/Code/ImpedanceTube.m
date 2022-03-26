@@ -21,8 +21,8 @@ f_us = .45*c/s;
  
 %% Load .etx files to Matlab
 path2files = "C:\Users\erlen\Downloads\Lab2_TTT4250"
-fileName1  = "Imp_tube_12.etx"
-fileName2  = "Imp_tube_21.etx"
+fileName1  = "C:\TTT4250_Lab2\Matlab\etx files\Imp_tube_12.etx"
+fileName2  = "C:\TTT4250_Lab2\Matlab\etx files\Imp_tube_21.etx"
 
 Tube_f1    = fileName1;
 Tube_f2    = fileName2;
@@ -167,34 +167,39 @@ k_DB70_Mik90 = omega/c_0 .* (-i) .* ( 11.41*(X*1000).^(-0.618) ...
 
 Z = Z_DB70_Mik90;
 Z = -1i.*Z_DB70_Mik90./tan(k_DB70_Mik90*h);
+Z_cot = -1i.*Z_DB70_Mik90./cot(k_DB70_Mik90*h);
 
 R = (Z-rho_0*c_0)./(Z+rho_0*c_0);
+R_cot = (Z_cot-rho_0*c_0)./(Z_cot+rho_0*c_0);
 a = 1-abs(R).^2
-
+a_cot = 1-abs(R_cot).^2
 figure(10)
 subplot(1,2,2)
-semilogx(f, real(Z))
+%semilogx(f, real(Z))
+semilogx(f, abs(Z_cot))
 hold on
-semilogx(f, imag(Z))
+%semilogx(f, imag(Z))
 semilogx(f, abs(Z))
 grid on
 title('Specific Impedance Z_C')
 xlabel('Frequency [Hz]' )
 ylabel("Magnitude")
-legend('Re[Z]', "Im[Z]", "|Z|")
+%legend('Re[Z]', "Im[Z]", "|Z|")
+legend("tan", "cot")
 set(gca,'fontsize',12,'fontweight','bold');
 set(gcf,'units','centimeters','position',[2,1,29.7,11.0])
 hold off
 
 figure(10)
 subplot(1,2,1)
-semilogx(f, abs(R))
+semilogx(f, abs(a_cot))
 hold on
 semilogx(f, abs(a))
 title('Absorption-and Reflection Coefficient')
 xlabel('Frequency [Hz]')
 ylabel("Magnitude")
-legend('Absorption', "Reflection", "Location", "best")
+%legend('Absorption', "Reflection", "Location", "best")
+legend("cot", "tan")
 set(gca,'fontsize',12,'fontweight','bold');
 grid on
 hold off
